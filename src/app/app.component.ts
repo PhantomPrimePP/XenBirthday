@@ -87,7 +87,7 @@ type Page = 'welcome' | 'tease' | 'hub' | 'trivia' | 'game' | 'gacha' | 'reward'
               <div class="question-card">
                 <div class="answer-list">
                   @for (answer of question.answers; track answer; let i = $index) {
-                    <button class="answer-button" [class.answer-right]="answerState !== 'idle' && i + 1 === question.correct" [class.answer-wrong]="answerState === 'wrong' && i === chosenAnswer" [disabled]="answerState !== 'idle'" (click)="answerQuestion(i)"><span class="answer-letter">{{letters[i]}}</span>{{answer}}<span class="answer-arrow">↗</span></button>
+                    <button class="answer-button" [class.answer-right]="answerState !== 'idle' && i === correctAnswerIndex" [class.answer-wrong]="answerState === 'wrong' && i === chosenAnswer" [disabled]="answerState !== 'idle'" (click)="answerQuestion(i)"><span class="answer-letter">{{letters[i]}}</span>{{answer}}<span class="answer-arrow">↗</span></button>
                   }
                 </div>
                 @if (answerState !== 'idle') { <p class="answer-feedback" [class.feedback-wrong]="answerState === 'wrong'">{{answerState === 'right' ? question.note : 'Not quite! Have another guess ✦'}}</p> }
@@ -267,6 +267,8 @@ export class AppComponent implements OnDestroy {
 
   get selectedPath(): ColorPath | null { return this.selectedColor ? BIRTHDAY_PATHS[this.selectedColor] : null; }
   get currentQuestion(): TriviaQuestion | null { return this.selectedPath?.questions[this.questionIndex] ?? null; }
+  /** Question data stores the correct answer as 1=A, 2=B, 3=C; template and click handling use zero-based array indexes. */
+  get correctAnswerIndex(): number { return (this.currentQuestion?.correct ?? 1) - 1; }
   get pullOdds(): number { return this.pullNumber === 1 ? 0 : this.pityActive ? 100 : this.gachaChance; }
   private get typingDuration(): number { return this.typingAttempts > 3 ? 10 : 5; }
 
@@ -322,11 +324,11 @@ export class AppComponent implements OnDestroy {
     this.page = path.game === 'quiz' ? 'trivia' : 'game';
   }
 
-  answerQuestion(answer: number): void {
+  answerQuestion(answerIndex: number): void {
     const question = this.currentQuestion;
     if (!question) return;
-    this.chosenAnswer = answer;
-    this.answerState = question.correct === answer + 1 ? 'right' : 'wrong';
+    this.chosenAnswer = answerIndex;
+    this.answerState = answerIndex === this.correctAnswerIndex ? 'right' : 'wrong';
     if (this.answerState === 'right') this.gachaChance = Math.min(70, this.gachaChance + 23);
     else this.playSound(this.selectedPath?.media.loseAudio);
     if (this.answerState === 'right') this.playSound(this.selectedPath?.media.gameAudio);

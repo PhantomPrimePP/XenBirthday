@@ -9,6 +9,44 @@ An Angular birthday flow with six art-themed choices, two trivia paths, four min
 3. In the integrated terminal, run `npm install` the first time, then `npm start`.
 4. Visit `http://localhost:4200`.
 
+## Push the website to GitHub Pages
+
+Open the project folder in VS Code, then choose **Terminal → New Terminal**. Replace `USERNAME` and `REPOSITORY` in the remote URL below with your GitHub username and repository name. Find the URL on GitHub with **Code → HTTPS → Copy URL**.
+
+### First push from this computer
+
+Run these commands from the project folder:
+
+```powershell
+git init
+git branch -M main
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+git add .
+git commit -m "Add Xenia birthday website"
+git push -u origin main
+```
+
+If Git says `origin` already exists, set its URL and continue:
+
+```powershell
+git remote set-url origin https://github.com/USERNAME/REPOSITORY.git
+git push -u origin main
+```
+
+If Git says there is nothing to commit, skip the `git commit` command and run the push command.
+
+### Push later changes
+
+After editing the site, run:
+
+```powershell
+git add .
+git commit -m "Describe the website changes"
+git push
+```
+
+After the push, open the repository’s **Actions** tab and wait for **Deploy birthday site to GitHub Pages** to finish successfully. GitHub Pages will then publish the update.
+
 ## Add your six art files and artist credits
 
 In `src/app/birthday-content.ts`, fill in each art reward's `image`, `artistQuote`, and `artistCredit`. Put your files in `public/images/Arts/` and use paths like `/images/Arts/sylus.png`. Indigo & white has two art reward entries; a successful gacha randomly reveals one of those two. The other themes each have one. The six art theme entries are:
